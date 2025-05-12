@@ -61,7 +61,7 @@ public class SimpleNotificationService implements NotificationService {
     }
 
     @Override
-    public void updatePreference(int accNumber, String notificationType, boolean isOn) {
+    public void updatePreference(int accNumber, String notificationType, String channel, boolean isOn) {
         NotificationPreference notificationPreference = notificationPreferenceStore.get(accNumber);
         if(notificationType.equals("all"))
         {
