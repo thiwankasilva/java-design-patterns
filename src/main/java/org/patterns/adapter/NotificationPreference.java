@@ -1,14 +1,15 @@
 package org.patterns.adapter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class NotificationPreference {
 
-    private int accNumber;
+    private final int accNumber;
     private String phoneNumber;
 
     private String email;
-    private Map<String, Boolean> notificationsSwitches;
+    private Map<String, Boolean> notificationsSwitches = new HashMap<>();
 
     public NotificationPreference(int accNumber) {
         this.accNumber = accNumber;

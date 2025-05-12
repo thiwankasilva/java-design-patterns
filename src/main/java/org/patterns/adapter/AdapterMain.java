@@ -16,14 +16,14 @@ public class AdapterMain {
 
         while (true)
         {
-            System.out.println("Enter Command");
+            System.out.println("Enter Command :");
             String cmd = in.readLine();
             //withdraw 12344 50000
             //deposit 14243 50000
             //exit - break
             //set phone accNumber phoneNumber
             //set email accNumber email
-            //set notification accountNo withdrawal on/off
+            //set notification accountNo withdraw on/off
             //set notification accountNo deposit on/off
             //set notification accountNo all on/off
             if (cmd.equals("exit")) return;
@@ -45,16 +45,17 @@ public class AdapterMain {
                         notificationService.updatePreference(Integer.parseInt(input[2]),notificationType, isOn);
                         break;
                 }
-            }
-            int accNumber = Integer.parseInt(input[1]);
-            int amount = Integer.parseInt(input[2]);
-            if(input[0].equals("withdraw"))
+            } else if(input[0].equals("withdraw"))
             {
+                int accNumber = Integer.parseInt(input[1]);
+                int amount = Integer.parseInt(input[2]);
                 accountService.withdraw(accNumber,amount);
             }
             else if (input[0].equals("deposit"))
             {
-                accountService.deposit(accNumber,amount);
+                int accNumber = Integer.parseInt(input[1]);
+                int amount = Integer.parseInt(input[2]);
+                 accountService.deposit(accNumber,amount);
             }
             else
             {

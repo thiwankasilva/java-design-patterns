@@ -22,7 +22,7 @@ public class AccountService {
         }
         account.withdraw(amount);
         Map<String,Object> context = new HashMap<>(){{put("AccountNumber",accNumber);put("amount",amount);}};
-        notificationService.notify("windrawal",context);
+        notificationService.notify("withdraw",context);
 
     }
     public void deposit(int accNumber, int amount)
@@ -35,6 +35,6 @@ public class AccountService {
         }
         account.deposit(amount);
         Map<String,Object> context = new HashMap<>(){{put("AccountNumber",accNumber);put("amount",amount);}};
-        notificationService.notify("Deposit",context);
+        notificationService.notify("deposit",context);
     }
 }

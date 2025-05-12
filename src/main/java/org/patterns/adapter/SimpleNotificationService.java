@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class SimpleNotificationService implements NotificationService {
 
-    private NotificationPreferenceStore notificationPreferenceStore;
+    private final NotificationPreferenceStore notificationPreferenceStore;
 
     public SimpleNotificationService(NotificationPreferenceStore notificationPreferenceStore) {
         this.notificationPreferenceStore = notificationPreferenceStore;
@@ -14,7 +14,7 @@ public class SimpleNotificationService implements NotificationService {
     @Override
     public void notify(String notificationType, Map<String, Object> context) {
         System.out.println("NotificationType : "+notificationType+" "+context);
-        int accNumber = (int) context.get("accountNumber");
+        int accNumber = (int) context.get("AccountNumber");
         int amount = (int) context.get("amount");
         boolean isOn = false;
 
@@ -24,10 +24,10 @@ public class SimpleNotificationService implements NotificationService {
             isOn = notificationPreference.getNotificationsSwitches().get(notificationType);
         }
         String message = "";
-        if(notificationType == "withdraw")
+        if(notificationType.equals("withdraw"))
         {
             message = amount +" is successfully withdrawed from account "+accNumber;
-        }else if (notificationType == "deposit")
+        }else if (notificationType.equals("deposit"))
         {
             message = amount +" is successfully deposited to account "+accNumber;
         }
@@ -61,11 +61,11 @@ public class SimpleNotificationService implements NotificationService {
     }
 
     @Override
-    public void updatePreference(int accNumber, String notificationType, String channel, boolean isOn) {
+    public void updatePreference(int accNumber, String notificationType, boolean isOn) {
         NotificationPreference notificationPreference = notificationPreferenceStore.get(accNumber);
         if(notificationType.equals("all"))
         {
-            notificationPreference.getNotificationsSwitches().put("withdrawal",isOn);
+            notificationPreference.getNotificationsSwitches().put("withdraw",isOn);
             notificationPreference.getNotificationsSwitches().put("deposit",isOn);
 
         }else
