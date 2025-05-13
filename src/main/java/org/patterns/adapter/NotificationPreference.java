@@ -9,14 +9,10 @@ public class NotificationPreference {
     private String phoneNumber;
 
     private String email;
-    private Map<String, Boolean> notificationsSwitches = new HashMap<>();
+    private final Map<String, HashMap<String,Boolean>> notificationsSwitches = new HashMap<>();
 
     public NotificationPreference(int accNumber) {
         this.accNumber = accNumber;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
     }
 
     public void setPhoneNumber(String phoneNumber) {
@@ -27,19 +23,19 @@ public class NotificationPreference {
         return accNumber;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber != null ? phoneNumber : "";
+    }
+
     public String getEmail() {
-        return email;
+        return email != null ? email : "";
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public Map<String, Boolean> getNotificationsSwitches() {
+    public Map<String, HashMap<String, Boolean>> getNotificationsSwitches() {
         return notificationsSwitches;
-    }
-
-    public void setNotificationsSwitches(Map<String, Boolean> notificationsSwitches) {
-        this.notificationsSwitches = notificationsSwitches;
     }
 }

@@ -23,9 +23,12 @@ public class AdapterMain {
             //exit - break
             //set phone accNumber phoneNumber
             //set email accNumber email
-            //set notification accountNo withdraw on/off
-            //set notification accountNo deposit on/off
-            //set notification accountNo all on/off
+            //set notification accountNo withdraw sms on/off
+            //set notification accountNo deposit email on/off
+            //set notification accountNo all sms on/off
+            //set notification accountNo all email on/off
+            //set notification accountNo all all on/off
+
             if (cmd.equals("exit")) return;
             String[] input = cmd.split(" ");
 
@@ -41,8 +44,9 @@ public class AdapterMain {
                         break;
                     case "notification":
                         String notificationType = input[3];
-                        boolean isOn = Boolean.parseBoolean(input[4]);
-                        notificationService.updatePreference(Integer.parseInt(input[2]),notificationType, isOn);
+                        String channel = input[4];
+                        boolean isOn = Boolean.parseBoolean(input[5]);
+                        notificationService.updatePreference(Integer.parseInt(input[2]),notificationType,channel, isOn);
                         break;
                 }
             } else if(input[0].equals("withdraw"))
