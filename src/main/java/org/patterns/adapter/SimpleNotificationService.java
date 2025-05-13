@@ -2,8 +2,6 @@ package org.patterns.adapter;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-
 public class SimpleNotificationService implements NotificationService {
 
     private final NotificationPreferenceStore notificationPreferenceStore;
@@ -27,38 +25,59 @@ public class SimpleNotificationService implements NotificationService {
 
     private void notifyByChannelAndOperations(Map<String, Object> context, NotificationPreference notificationPreference,
                                               String notificationType) {
-       boolean isOn = false;
 
-        Map<String,HashMap<String,Boolean>> notificationsSwitches = notificationPreference.getNotificationsSwitches();
-        Set<String> keysToCheck = Set.of("all", "sms","email");
-        Map<String, ?> switches = notificationsSwitches.get(notificationType);
+        Map<String, HashMap<String, Boolean>> notificationsSwitches = notificationPreference.getNotificationsSwitches();
 
-        if(!notificationsSwitches.isEmpty() && notificationsSwitches.containsKey(notificationType))
-        {
-            isOn = switches != null && keysToCheck.stream().anyMatch(switches::containsKey);
+        if (notificationsSwitches == null || notificationsSwitches.isEmpty()) {
+            System.out.println("Notification switches are empty or null.");
+            return;
         }
 
-        if(isOn)
-        {
-            if(notificationsSwitches.get(notificationType).get("all"))
-            {
-                notifyViaEmail(notificationPreference.getEmail(),context,notificationType);
-                notifyViaSms(notificationPreference.getPhoneNumber(),context,notificationType);
-            } else if (notificationsSwitches.get(notificationType).get("sms")) {
+        if (!notificationsSwitches.containsKey(notificationType)) {
+            System.out.println("No switches configured for notification type: " + notificationType);
+            return;
+        }
+
+        Map<String, Boolean> switches = notificationsSwitches.get(notificationType);
+        if (switches == null) {
+            System.out.println("Switches map for type '" + notificationType + "' is null.");
+            return;
+        }
+
+        // Safely extract the values
+        Boolean allSwitch = switches.getOrDefault("all", false);
+        Boolean smsSwitch = switches.getOrDefault("sms", false);
+        Boolean emailSwitch = switches.getOrDefault("email", false);
+
+        boolean isOn = allSwitch || smsSwitch || emailSwitch;
+
+        if (!isOn) {
+            System.out.println("No notification channel enabled for type: " + notificationType);
+            return;
+        }
+
+        System.out.println("Sending notifications for type: " + notificationType);
+
+        if (Boolean.TRUE.equals(allSwitch)) {
+            notifyViaEmail(notificationPreference.getEmail(), context, notificationType);
+            notifyViaSms(notificationPreference.getPhoneNumber(), context, notificationType);
+        } else {
+            if (Boolean.TRUE.equals(smsSwitch)) {
                 notifyViaSms(notificationPreference.getPhoneNumber(), context, notificationType);
             }
-            else
-            {
+
+            if (Boolean.TRUE.equals(emailSwitch)) {
                 notifyViaEmail(notificationPreference.getEmail(), context, notificationType);
             }
         }
-
     }
+
+
 
     private void notifyViaSms(String phoneNumber, Map<String, Object> context, String notificationType) {
         int  amount = (int) context.get("Amount");
         int  accNumber = (int) context.get("AccountNumber");
-        String message = notificationType+ "is success. Account Number : "+accNumber+"Amount is -"+amount;
+        String message = notificationType+ "is success. Account Number : "+accNumber+"Amount is : "+amount;
         if(!phoneNumber.isEmpty())
         {
             smsSender.send(phoneNumber,message);
