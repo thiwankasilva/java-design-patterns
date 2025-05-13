@@ -1,6 +1,5 @@
 package org.patterns.adapter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -8,30 +7,28 @@ import java.util.Set;
 public class SimpleNotificationService implements NotificationService {
 
     private final NotificationPreferenceStore notificationPreferenceStore;
+    private final EmailSender emailSender;
 
-    public SimpleNotificationService(NotificationPreferenceStore notificationPreferenceStore) {
+    private final SMSSender smsSender;
+    public SimpleNotificationService(NotificationPreferenceStore notificationPreferenceStore, EmailSender emailSender, SMSSender smsSender) {
         this.notificationPreferenceStore = notificationPreferenceStore;
+        this.emailSender = emailSender;
+        this.smsSender = smsSender;
     }
 
     @Override
     public void notify(String notificationType, Map<String, Object> context) {
         System.out.println("NotificationType : " + notificationType + " " + context);
         int accNumber = (int) context.get("AccountNumber");
-        int amount = (int) context.get("amount");
         NotificationPreference notificationPreference = notificationPreferenceStore.get(accNumber);
-        String message = "";
-        if (notificationType.equals("withdraw")) {
-            message = amount + " is successfully withdrawed from account " + accNumber;
-        } else if (notificationType.equals("deposit")) {
-            message = amount + " is successfully deposited to account " + accNumber;
-        }
 
-        notifyByChannelAndOperations(message, notificationPreference, notificationType);
+        notifyByChannelAndOperations(context, notificationPreference, notificationType);
     }
 
-    private void notifyByChannelAndOperations(String message, NotificationPreference notificationPreference,
+    private void notifyByChannelAndOperations(Map<String, Object> context, NotificationPreference notificationPreference,
                                               String notificationType) {
        boolean isOn = false;
+
         Map<String,HashMap<String,Boolean>> notificationsSwitches = notificationPreference.getNotificationsSwitches();
         Set<String> keysToCheck = Set.of("all", "sms","email");
         Map<String, ?> switches = notificationsSwitches.get(notificationType);
@@ -40,27 +37,31 @@ public class SimpleNotificationService implements NotificationService {
         {
             isOn = switches != null && keysToCheck.stream().anyMatch(switches::containsKey);
         }
+
         if(isOn)
         {
             if(notificationsSwitches.get(notificationType).get("all"))
             {
-                notifyViaEmail(notificationPreference.getEmail(),message);
-                notifyViaSms(notificationPreference.getPhoneNumber(),message);
+                notifyViaEmail(notificationPreference.getEmail(),context,notificationType);
+                notifyViaSms(notificationPreference.getPhoneNumber(),context,notificationType);
             } else if (notificationsSwitches.get(notificationType).get("sms")) {
-                notifyViaSms(notificationPreference.getPhoneNumber(), message);
+                notifyViaSms(notificationPreference.getPhoneNumber(), context, notificationType);
             }
             else
             {
-                notifyViaEmail(notificationPreference.getEmail(), message);
+                notifyViaEmail(notificationPreference.getEmail(), context, notificationType);
             }
         }
 
     }
 
-    private void notifyViaSms(String phoneNumber, String message) {
+    private void notifyViaSms(String phoneNumber, Map<String, Object> context, String notificationType) {
+        int  amount = (int) context.get("Amount");
+        int  accNumber = (int) context.get("AccountNumber");
+        String message = notificationType+ "is success. Account Number : "+accNumber+"Amount is -"+amount;
         if(!phoneNumber.isEmpty())
         {
-            System.out.println("Sending sms : "+phoneNumber+" "+message);
+            smsSender.send(phoneNumber,message);
         }
         else {
             System.out.println("Phone number not provided");
@@ -68,10 +69,14 @@ public class SimpleNotificationService implements NotificationService {
 
     }
 
-    private void notifyViaEmail(String email, String message) {
+    private void notifyViaEmail(String email, Map<String, Object> context, String notificationType) {
+        int  amount = (int) context.get("Amount");
+        int  accNumber = (int) context.get("AccountNumber");
+        String subject = "Notification on - "+notificationType;
+        String body = notificationType+ "is success. Account Number : "+accNumber+"Amount is -"+amount;
         if(!email.isEmpty())
         {
-            System.out.println("Sending email : "+email+" "+message);
+            emailSender.send(email,subject,body);
         }
         else {
             System.out.println("Email not provided");

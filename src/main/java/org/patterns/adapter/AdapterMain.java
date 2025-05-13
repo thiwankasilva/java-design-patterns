@@ -11,7 +11,9 @@ public class AdapterMain {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         AccountStore store = new InMemoryAccountStore();
         NotificationPreferenceStore notificationPreferenceStore = new InMemoryNotificationStore();
-        NotificationService notificationService = new SimpleNotificationService(notificationPreferenceStore);
+        EmailSender emailSender = new DummyEmailSender();
+        SMSSender smsSender = new DummySMSSender();
+        NotificationService notificationService = new SimpleNotificationService(notificationPreferenceStore,emailSender,smsSender);
         AccountService accountService = new AccountService(store,notificationService);
 
         while (true)

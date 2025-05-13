@@ -21,7 +21,7 @@ public class AccountService {
             throw new RuntimeException("Insufficient Balance");
         }
         account.withdraw(amount);
-        Map<String,Object> context = new HashMap<>(){{put("AccountNumber",accNumber);put("amount",amount);}};
+        Map<String,Object> context = new HashMap<>(){{put("AccountNumber",accNumber);put("Amount",amount);}};
         notificationService.notify("withdraw",context);
 
     }
@@ -34,7 +34,7 @@ public class AccountService {
             throw new RuntimeException("Error Negative input value");
         }
         account.deposit(amount);
-        Map<String,Object> context = new HashMap<>(){{put("AccountNumber",accNumber);put("amount",amount);}};
+        Map<String,Object> context = new HashMap<>(){{put("AccountNumber",accNumber);put("Amount",amount);}};
         notificationService.notify("deposit",context);
     }
 }
